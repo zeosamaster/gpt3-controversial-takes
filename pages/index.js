@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Head from "next/head";
 import Image from "next/image";
 import buildspaceLogo from "../assets/buildspace-logo.png";
@@ -8,7 +8,11 @@ const Home = () => {
   const [apiOutput, setApiOutput] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
 
-  const callGenerateEndpoint = async () => {
+  const callGenerateEndpoint = async (e) => {
+    e?.preventDefault();
+
+    if (!userInput) return;
+
     setIsGenerating(true);
 
     const response = await fetch("/api/generate", {
@@ -26,6 +30,15 @@ const Home = () => {
     setIsGenerating(false);
   };
 
+  useEffect(() => {
+    function keyDown(e) {
+      if (!(e.keyCode == 13 && e.metaKey)) return;
+      callGenerateEndpoint();
+    }
+    document.body.addEventListener("keydown", keyDown);
+    return () => document.body.removeEventListener("keydown", keyDown);
+  });
+
   return (
     <div className="root">
       <Head>
@@ -40,7 +53,7 @@ const Home = () => {
             <h2>Input a topic and generate controversial takes instantly!</h2>
           </div>
         </div>
-        <div className="prompt-container">
+        <form className="prompt-container" onSubmit={callGenerateEndpoint}>
           <textarea
             placeholder="(e.g. climate change and its effects on the environment)"
             className="prompt-box"
@@ -49,7 +62,7 @@ const Home = () => {
           />
 
           <div className="prompt-buttons">
-            <a className="generate-button" onClick={callGenerateEndpoint}>
+            <button className="generate-button" disabled={isGenerating}>
               <div className="generate">
                 {isGenerating ? (
                   <span className="loader"></span>
@@ -57,7 +70,7 @@ const Home = () => {
                   <p>Generate</p>
                 )}
               </div>
-            </a>
+            </button>
           </div>
 
           {apiOutput && (
@@ -72,7 +85,7 @@ const Home = () => {
               </div>
             </div>
           )}
-        </div>
+        </form>
       </div>
       <div className="badge-container grow">
         <a

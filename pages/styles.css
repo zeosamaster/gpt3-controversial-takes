@@ -184,6 +184,7 @@ textarea {
   width: min-content;
   will-change: transform;
   cursor: pointer;
+  outline-offset: -1px;
 }
 
 .generate {
