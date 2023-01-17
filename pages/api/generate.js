@@ -6,16 +6,21 @@ const configuration = new Configuration({
 
 const openai = new OpenAIApi(configuration);
 
-const basePromptPrefix =
-  "Generate a controversial take on the following topic: ";
+const prompts = {
+  average: (userPrompt) =>
+    `Generate a controversial take on the following topic: "${userPrompt}".\n`,
+  hardcore: (userPrompt) =>
+    `Generate a controversial take on the following topic: "${userPrompt}". The message should be outrageous and written using an extremely hardcore tone. Avoid mentioning money.\n`,
+};
 
 const generateAction = async (req, res) => {
-  // Run first prompt
-  console.log(`API: ${basePromptPrefix}${req.body.userInput}\n`);
+  const { userInput, hardcore } = req.body;
+
+  const promptType = hardcore ? prompts.hardcore : prompts.average;
 
   const baseCompletion = await openai.createCompletion({
     model: "text-davinci-003",
-    prompt: `${basePromptPrefix}${req.body.userInput}`,
+    prompt: promptType(userInput),
     temperature: 0.9,
     max_tokens: 250,
   });

@@ -5,6 +5,7 @@ import buildspaceLogo from "../assets/buildspace-logo.png";
 
 const Home = () => {
   const [userInput, setUserInput] = useState("");
+  const [hardcore, setHardcore] = useState(false);
   const [apiOutput, setApiOutput] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
 
@@ -20,7 +21,7 @@ const Home = () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ userInput }),
+      body: JSON.stringify({ userInput, hardcore }),
     });
 
     const { output } = await response.json();
@@ -62,6 +63,16 @@ const Home = () => {
           />
 
           <div className="prompt-buttons">
+            <input
+              id="hardcore-mode"
+              type="checkbox"
+              value={hardcore}
+              onChange={() => setHardcore((prev) => !prev)}
+            />
+            <label for="hardcore-mode" style={{ color: "white" }}>
+              Give me hardcore
+            </label>
+
             <button className="generate-button" disabled={isGenerating}>
               <div className="generate">
                 {isGenerating ? (
